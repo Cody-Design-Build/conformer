@@ -1,6 +1,6 @@
 # Conformer system and CLI specification
 
-Draft 0.1 · October 28, 2026 · Owner: David Cody
+Draft 0.2 · October 28, 2026 · Owner: David Cody
 
 **Status: planning, not approved for implementation.** Confirmed requirements below come from David's direction. The remaining design is a proposal to review. Example commands, keys, and layouts are illustrative; they do not describe existing software.
 
@@ -75,7 +75,7 @@ Configuration defines a format version, workspace ID, type-definition location, 
 
 ## 5. Managed documents and formats
 
-A workspace can contain both managed documents and ordinary supporting files. Scanning does not automatically assign IDs to every photograph or PDF. Configuration specifies which files require metadata; unclassified files remain visible in inventory rather than disappearing from results.
+A workspace can contain both managed documents and ordinary supporting files. Scanning does not automatically assign IDs to every photograph or PDF. Configuration specifies which files require metadata; unclassified files remain visible in inventory rather than disappearing from results. David identified extensive sidecar files as a clutter concern. Metadata should be introduced only where identity, validation, or a workflow requires it; document-first does not mean a metadata companion for every file.
 
 | Format | Proposed responsibility |
 |---|---|
@@ -86,7 +86,18 @@ A workspace can contain both managed documents and ordinary supporting files. Sc
 | HTML | Preserve usable HTML. Treat metadata separately unless an explicit embedded convention is selected; scanning does not execute scripts. |
 | Other formats | Preserve and inventory; clearly report the level of validation actually supported. |
 
-**Open decision D01:** metadata for formats without frontmatter. Recommended starting option: a neighboring metadata sidecar for files deliberately enrolled as managed documents. Alternatives are a workspace catalog or type-specific embedded metadata. No decision is assumed yet.
+**Open decision D01:** metadata for formats without frontmatter. Neighboring sidecars remain an option, but are no longer the recommended default. Review these choices by document type:
+
+| Choice | Appropriate use | Tradeoff |
+|---|---|---|
+| Ordinary file linked from an existing managed document | Supporting photos, plans, confirmations, and attachments that need no independent workflow | No new metadata file. A path link alone does not provide stable identity after an external move. |
+| Native embedded metadata | A format with a portable, inspectable convention that survives its normal editors | Keeps identity with the file; requires format-specific verification and must not modify issued evidence. |
+| Workspace metadata catalog under `.conformer/` | Independently managed non-Markdown files needing IDs and typed fields | Keeps working folders clean, but separates metadata from payloads and requires rename/copy/conflict handling. |
+| Neighboring sidecar | A type whose portability as a payload-plus-metadata pair justifies an extra file | Visible clutter and the risk of separating the pair. |
+
+**Proposed starting approach:** supporting files remain ordinary files; existing managed documents link to them. Decide metadata for an independently managed workbook, PDF, or other format when defining that type. Do not create empty Markdown wrappers merely to hide the same one-companion-per-file overhead.
+
+If a workspace catalog is selected, it is authoritative metadata stored as ordinary files, not a disposable index. Its contents must be included in backups and exports. Catalog layout (one JSON file, grouped files, or per-ID entries), external-move detection, and reconciliation remain open. A content hash can help locate candidates but cannot replace identity: editing changes bytes, and distinct documents may have identical bytes. Ambiguous matches require resolution rather than automatic reassignment.
 
 If sidecars are selected, define naming, payload association, orphan detection, collisions, and paired move/restore behavior. Copying a payload without its sidecar must be reported, not guessed into a new identity. Do not impose metadata fields inside a binary format without an adapter contract.
 
@@ -251,7 +262,7 @@ No statuses, required business fields, folder hierarchy, or imported legacy sche
 |---|---|
 | Local documents are authoritative; CLI is generic and workspace-scoped | Confirmed |
 | Build starts after specification is settled | Confirmed |
-| Metadata carrier for non-Markdown formats | Open; sidecars proposed |
+| Metadata carrier for non-Markdown formats | Open by type; avoid extensive sidecars, which David identified as a clutter concern |
 | First business document type | Open; job proposed |
 | Common metadata keys and ID format | Open |
 | Link syntax and Obsidian behavior | Open; test ordinary Markdown and wikilinks |

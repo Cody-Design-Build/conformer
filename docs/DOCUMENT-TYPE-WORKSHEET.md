@@ -7,7 +7,9 @@ Copy this worksheet when we begin defining a type. All business rules are open u
 | Type name and business purpose | To decide |
 | Natural unit: document, grouped schedule, workbook, or supporting file | To decide |
 | Preferred format and supported alternatives | To decide |
+| Does this file need independent identity, or is an ordinary supporting link sufficient? | To decide |
 | Metadata carrier and schema version | To decide |
+| Metadata clutter, portability when copied, and behavior after an external move | To decide |
 | Stable identity and human-readable numbering | To decide |
 | Required fields, optional fields, and permitted extensions | To decide |
 | Missing, blank, null, and default semantics | To decide |
