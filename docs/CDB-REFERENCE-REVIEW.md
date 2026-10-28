@@ -12,7 +12,7 @@ David identified [Cody-Design-Build/Surface](https://github.com/Cody-Design-Buil
 
 The function is SQL and uses PostgreSQL `random()`. No replacement definition was found in the later migrations inspected through 0009. Surface's local runtime applies those migrations to its embedded database. This source verifies the pattern; it does not prove live deployment state or runtime collision rates.
 
-Conformer can implement the encoding directly in its CLI, using the runtime's secure random source and local duplicate checks. No database is required for that algorithm. The existing 12-character format and Conformer's current 10-character Base36 proposal differ; borrowing code does not silently settle that length/alphabet choice.
+Conformer can implement the encoding directly in its CLI, using the runtime's secure random source and local duplicate checks. No database is required for that algorithm. The existing 12-character format and Conformer's selected 10-character Base36 format differ. David chose the shorter format; adapt the encoding parameters and randomness source accordingly.
 
 ### Reuse plan
 

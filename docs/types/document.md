@@ -34,4 +34,4 @@ The Markdown example demonstrates the simplest metadata carrier. Using the gener
 
 ## Decisions still needed
 
-A Base36 timestamp plus four random characters is now the proposed ID format; see the current identity proposal. Remaining decisions include exact key spelling; schema-version resolution; extension-field policy; deletion/restore identity reservation; optional display-label convention. No business statuses or folder rules are needed to settle this type.
+A Base36 timestamp plus four random characters is the selected ID format; see the identity design. Remaining decisions include exact key spelling; schema-version resolution; extension-field policy; deletion/restore identity reservation; optional display-label convention. No business statuses or folder rules are needed to settle this type.

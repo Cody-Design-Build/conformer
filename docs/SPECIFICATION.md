@@ -33,7 +33,7 @@ Spreadsheets, PDFs, CSV, HTML, images, and other formats coexist as ordinary fil
 
 ## Identity
 
-**Current proposal: Base36 Unix seconds followed by four securely random Base36 characters.** This is 10 characters at present. It is a small Conformer convention built from ordinary timestamp, encoding, and secure-random primitives; no ID service or machine registration is needed. The timestamp must never be truncated or wrapped. See [the ID proposal](IDENTITY.md) for the exact format and collision behavior.
+**Selected ID format: Base36 Unix seconds followed by four securely random Base36 characters.** This is 10 characters at present. It is a small Conformer convention built from ordinary timestamp, encoding, and secure-random primitives; no ID service or machine registration is needed. The timestamp must never be truncated or wrapped. See [the ID design](IDENTITY.md) for the exact format and collision behavior.
 
 - Generate once when creating a document.
 - Preserve the full ID when editing, moving, renaming, or later changing type.
@@ -83,7 +83,7 @@ Provide readable output and a JSON option for agents. Writes should have a previ
 
 ## Reusing Surface
 
-David authorized reusing suitable code from `Cody-Design-Build/Surface`. The verified ID generator uses seven Base32 time characters plus five random characters (12 total). Confirm whether to reuse that exact format or the shorter proposal above. See [source findings and reuse candidates](CDB-REFERENCE-REVIEW.md).
+David authorized reusing suitable code from `Cody-Design-Build/Surface`. The verified ID generator uses seven Base32 time characters plus five random characters (12 total). David selected the shorter Conformer format above; adapt the pattern rather than copying Surface's exact parameters. See [source findings and reuse candidates](CDB-REFERENCE-REVIEW.md).
 
 Prefer extracted Markdown/link helpers and adapted tests. Keep document files authoritative; do not bring in Surface's database, cloud sync, server, or checkout lifecycle. Source reuse does not start implementation automatically.
 
@@ -93,4 +93,4 @@ Add custom type creation and typed metadata updates next; define the job master 
 
 A job master holds general job information and links to separate budgets and other documents. It does not become the budget itself.
 
-Next: choose the exact ID length/alphabet using the verified Surface example, settle minimal linking behavior and implementation language, then explicitly start the first build. This document does not authorize production migration.
+Next: explain and settle linking behavior, then implementation language, one decision at a time. The ID format is settled. Start the build after the remaining choices are settled and David directs it. This document does not authorize production migration.

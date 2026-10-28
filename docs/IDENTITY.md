@@ -1,10 +1,10 @@
 # Compact document IDs
 
-October 28, 2026 · Current design proposal, not yet implemented
+October 28, 2026 · ID format selected by David, not yet implemented
 
 ## Verified Surface reference
 
-The source David supplied implements the same time-plus-random pattern with different parameters: **seven lowercase Crockford Base32 characters of Unix seconds plus five random characters**, totaling **12**. See [`surface_id()`](https://github.com/Cody-Design-Build/Surface/blob/ed9c427b5a821a24c37e81857b97f8edebc12197/supabase/migrations/0001_types_engine.sql#L5-L24) and [the reuse review](CDB-REFERENCE-REVIEW.md). The code is now available as a reference; the shorter Conformer proposal below is not its exact format. Decide whether to retain Surface's format or shorten it before implementation.
+The source David supplied implements the same time-plus-random pattern with different parameters: **seven lowercase Crockford Base32 characters of Unix seconds plus five random characters**, totaling **12**. See [`surface_id()`](https://github.com/Cody-Design-Build/Surface/blob/ed9c427b5a821a24c37e81857b97f8edebc12197/supabase/migrations/0001_types_engine.sql#L5-L24) and [the reuse review](CDB-REFERENCE-REVIEW.md). David selected Conformer's shorter Base36 format below. Surface remains a code reference; its 12-character format is not adopted.
 
 ## Format
 
