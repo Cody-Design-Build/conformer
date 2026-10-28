@@ -33,14 +33,14 @@ Before completing a local creation, check existing IDs. If the new candidate alr
 
 Offline devices cannot check one another's pending work. After sync, `check` reports duplicate IDs and ID-based operations refuse ambiguous targets. Never automatically change an established duplicate's ID: it could be two versions of the same document. Secure-random failures are errors, not permission to fall back to a weak generator.
 
-## Permanent identity and links
+## Permanent identity
 
 - New document: allocate once.
 - Edit, rename, move, archive, or change type: retain the ID.
 - Sync or restore the same document: retain the ID.
 - Copy as a distinct document: allocate a new ID through a later explicit copy operation.
 - Find: scan metadata and resolve the current path; fail on missing or ambiguous results.
-- Link: store the target ID and derive ordinary clickable navigation, as specified in [the first-version plan](SPECIFICATION.md).
+- Links remain ordinary file links. Automated relationships and link repair are deferred; see [the first-version plan](SPECIFICATION.md).
 
 An ID does not prevent two people creating different documents about the same job, or resolve simultaneous edits. No production IDs are rewritten by this planning decision. Legacy adoption can be designed later, and the old CLI is no longer a prerequisite.
 

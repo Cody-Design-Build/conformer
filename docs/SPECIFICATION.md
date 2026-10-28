@@ -1,24 +1,28 @@
 # Conformer first-version specification
 
-Draft 0.5 · October 28, 2026 · Planning only
+Draft 0.6 · October 28, 2026 · Scope agreed; planning only
 
-## Purpose
+## One job
 
-Everything is a document. Start with a small local tool that creates document IDs, finds documents, checks metadata, and maintains links. Build additional capabilities when a real workflow needs them.
+Give documents an identity and check their metadata. The files are the system; Conformer is a small local tool that helps keep them consistent.
 
-Files are authoritative. Core operation needs no server, database, account, agent integration, or network connection. File synchronization remains external. The earlier broad design is preserved in Git history; it is not the first-version checklist. Reviewing the old CLI is optional reference work, not a blocker.
+Everything is a document, but not everything is Markdown. Start by managing Markdown metadata. Spreadsheets, PDFs, CSV, HTML, images, and other files coexist normally, without registration or sidecars.
 
-## One workspace and one built-in type
+Files remain authoritative and usable without Conformer. No server, database, account, network connection, or Obsidian plugin is required. Sync is external.
 
-Each invocation explicitly selects a root folder, independent of the current working directory:
+## Workspace
+
+Point each invocation at one folder, independently of the current working directory:
 
 ```text
 conformer --workspace /path/to/documents check
 ```
 
-Scan managed Markdown recursively within that folder. A small `.conformer/workspace.json` identifies the workspace and scan exclusions. Do not scan outside the root or follow symlinks. Files can live anywhere in the scope; the first version does not enforce a folder hierarchy.
+Scan Markdown within that folder recursively, with exclusions in one local `.conformer/workspace.json` configuration file. Exclude Conformer's own configuration; do not follow symlinks or scan outside the root. Documents can live anywhere within scope. No prescribed folder hierarchy.
 
-The one built-in type requires only:
+## Metadata and types
+
+One built-in type, `document`, requires only:
 
 ```yaml
 ---
@@ -27,70 +31,46 @@ id: "TNLC00K7Q2"
 ---
 ```
 
-The ID above is a synthetic format example, not one to reuse. No required title, date, status, body structure, or sidecar. Use the filename as the display label initially.
+The ID is a synthetic example, not one to reuse. No required title, date, status, body structure, or sidecar.
 
-Spreadsheets, PDFs, CSV, HTML, images, and other formats coexist as ordinary files. Independent metadata management for those formats is deferred; they are not converted into Markdown or automatically given sidecars. Agents can use their normal format-aware tools.
+Custom types are simple workspace configuration entries listing additional required fields. They inherit the ID and type requirements. Start with presence checks for those fields; richer field constraints and CLI editing of definitions can come later. No bundled business schemas or schema-version system is needed to start. Extra metadata is allowed and preserved.
 
-## Identity
+## Identity and finding
 
-**Selected ID format: Base36 Unix seconds followed by four securely random Base36 characters.** This is 10 characters at present. It is a small Conformer convention built from ordinary timestamp, encoding, and secure-random primitives; no ID service or machine registration is needed. The timestamp must never be truncated or wrapped. See [the ID design](IDENTITY.md) for the exact format and collision behavior.
+Use the selected uppercase Base36 Unix-seconds timestamp plus four securely random Base36 characters: ten characters currently. See [the ID design](IDENTITY.md) for exact generation rules.
 
-- Generate once when creating a document.
-- Preserve the full ID when editing, moving, renaming, or later changing type.
-- A new independent document gets a new ID. Synchronizing the same document retains its ID.
-- Check for locally existing IDs before creating a file; report duplicate IDs after synchronization.
-- Never silently choose between two files with the same ID or automatically rekey one: it could be a conflict copy of the same document.
-- The ID is not the filename, document number, revision, or content hash.
+IDs remain unchanged when a file is edited, moved, or renamed. New independent documents get new IDs. Creation checks for existing IDs and retries a colliding candidate. After sync, report established duplicates without automatically changing either file.
 
-No arbitrary offline ID scheme promises mathematical impossibility of collision. At the low document creation rate described by David, the proposed format trades a small same-second collision risk for readable IDs, with explicit duplicate detection. IDs also do not prevent two people from creating separate documents for the same real-world job.
-
-## Find and link
-
-Start with direct filesystem scans; no persistent index is required. `find <id>` returns the current path. A missing ID or duplicate match is an error.
-
-**Proposed minimal link convention:** an optional `links` metadata list stores full target IDs. `link <source-id> <target-id>` adds the relationship and maintains a clearly marked generated block of ordinary relative Markdown links in the source document. Labels come from target filenames. The IDs are authoritative; the generated links are navigation for Obsidian and other Markdown readers.
-
-A CLI move/rename preserves identity and refreshes affected generated links, including outgoing relative links when their source moves. An external move leaves the ID discoverable, but path links can be stale until checked and refreshed. Do not claim that embedding an ID makes ordinary Markdown links automatically follow moves.
-
-Free-form body links remain ordinary Markdown. The first version does not promise automatic repair of every inline link, embed, or external application's references. Exact generated-block markers are to be settled during implementation planning.
+`find <id>` scans metadata and returns the current path, including after a manual move. Missing or duplicate matches produce an error. No persistent index is required.
 
 ## Small command surface
 
-These are proposed commands, not installed software:
+These are proposed spellings, not installed software:
 
 | Command | Purpose |
 |---|---|
-| `init` | Create workspace configuration without reorganizing documents. |
-| `new <path>` | Create a generic document with a fresh ID; never overwrite a destination. |
-| `find <id>` | Resolve a full ID to its current path. |
-| `check` | Report malformed metadata, missing/duplicate IDs, unresolved ID links, and stale generated navigation. |
-| `link <source-id> <target-id>` | Store the target ID and generate a normal clickable link. |
-| `refresh-links` | Regenerate managed navigation from ID relationships. |
-| `move <id> <new-path>` | Move or rename and update affected generated navigation. |
+| `init` | Create the workspace configuration without reorganizing files. |
+| `new <path>` | Create a document with valid metadata and a fresh ID; optionally select a configured type and supply its required fields. |
+| `check` | Report malformed YAML, missing required fields, unknown types, invalid IDs, and duplicate IDs. |
+| `find <id>` | Return the unique matching document's current path. |
 
-Provide readable output and a JSON option for agents. Writes should have a preview option, check the versions they read, preserve unrelated body content, and verify saved results. If a move or link refresh changes multiple files and is interrupted, report the actual partial result and a recoverable next step. Do not claim atomic multi-device updates.
+Provide readable output and a JSON option for agents. Creation must stay inside the workspace and never overwrite an existing destination. Checking and finding do not modify files. Validation errors identify the file and problem.
 
-## Checks that prove the foundation
+## Links and other deferred work
 
-1. Create documents on two offline devices, then combine the files and validate IDs.
-2. Create several documents in the same second; verify local collision retry with a deliberately repeated candidate and duplicate detection after independently generated files are combined.
-3. Find a document after a manual rename or move.
-4. Move a linked document through the CLI and verify the generated links still work.
-5. Detect a copied/conflicted duplicate ID without changing either file.
-6. Detect malformed YAML and unresolved target IDs without hiding those documents.
-7. Confirm a metadata update preserves narrative content and a stale write is rejected where detectable.
-8. Operate without internet access and open the documents without Conformer.
+Use ordinary file links. The first version does not store relationships, generate navigation sections, repair links, or provide move/rename workflows. Manual moves may require ordinary link edits.
 
-## Reusing Surface
+Metadata updates, CLI type-definition editing, richer field rules, non-Markdown metadata, folder policies, copy/delete workflows, and a job type can be added when needed. These are not prerequisites.
 
-David authorized reusing suitable code from `Cody-Design-Build/Surface`. The verified ID generator uses seven Base32 time characters plus five random characters (12 total). David selected the shorter Conformer format above; adapt the pattern rather than copying Surface's exact parameters. See [source findings and reuse candidates](CDB-REFERENCE-REVIEW.md).
+Surface is an authorized code reference. Reuse small suitable helpers if useful; do not inherit its database, cloud sync, or application lifecycle. See [the reference review](CDB-REFERENCE-REVIEW.md).
 
-Prefer extracted Markdown/link helpers and adapted tests. Keep document files authoritative; do not bring in Surface's database, cloud sync, server, or checkout lifecycle. Source reuse does not start implementation automatically.
+## Acceptance checks
 
-## Later increments
+- Create a generic document and a configured custom type with their required fields.
+- Detect malformed YAML, missing fields, unknown types, invalid IDs, and duplicates without changing files.
+- Find a document after a manual rename or move.
+- Retry an injected new-ID collision and report duplicate IDs after combining offline files.
+- Reject existing destinations and paths outside the workspace.
+- Operate offline; leave other formats and document bodies untouched.
 
-Add custom type creation and typed metadata updates next; define the job master as the first business example. Then consider non-Markdown metadata, richer queries, folder policies, copy-as-new, and recoverable deletion. None requires a bundled business schema library.
-
-A job master holds general job information and links to separate budgets and other documents. It does not become the budget itself.
-
-Next: explain and settle linking behavior, then implementation language, one decision at a time. The ID format is settled. Start the build after the remaining choices are settled and David directs it. This document does not authorize production migration.
+The scope and ID format are agreed. Implementation language remains an implementation choice, not a reason to expand this specification. Start building only when David directs it. No production migration is authorized.
