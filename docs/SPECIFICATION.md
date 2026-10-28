@@ -1,6 +1,6 @@
 # Conformer first-version specification
 
-Draft 0.4 · October 28, 2026 · Planning only
+Draft 0.5 · October 28, 2026 · Planning only
 
 ## Purpose
 
@@ -23,7 +23,7 @@ The one built-in type requires only:
 ```yaml
 ---
 document_type: document
-id: "019a0000-0000-7000-8000-000000000001"
+id: "TNLC00K7Q2"
 ---
 ```
 
@@ -33,7 +33,7 @@ Spreadsheets, PDFs, CSV, HTML, images, and other formats coexist as ordinary fil
 
 ## Identity
 
-**Recommendation for review: UUIDv7**, generated with a standard implementation using secure randomness. Its time component fits the requested time-based design and independent generation works offline. See [the ID proposal](IDENTITY.md).
+**Current proposal: Base36 Unix seconds followed by four securely random Base36 characters.** This is 10 characters at present. It is a small Conformer convention built from ordinary timestamp, encoding, and secure-random primitives; no ID service or machine registration is needed. The timestamp must never be truncated or wrapped. See [the ID proposal](IDENTITY.md) for the exact format and collision behavior.
 
 - Generate once when creating a document.
 - Preserve the full ID when editing, moving, renaming, or later changing type.
@@ -42,7 +42,7 @@ Spreadsheets, PDFs, CSV, HTML, images, and other formats coexist as ordinary fil
 - Never silently choose between two files with the same ID or automatically rekey one: it could be a conflict copy of the same document.
 - The ID is not the filename, document number, revision, or content hash.
 
-No arbitrary offline ID scheme promises mathematical impossibility of collision. The goal is negligible generation risk plus explicit duplicate detection. IDs also do not prevent two people from creating separate documents for the same real-world job.
+No arbitrary offline ID scheme promises mathematical impossibility of collision. At the low document creation rate described by David, the proposed format trades a small same-second collision risk for readable IDs, with explicit duplicate detection. IDs also do not prevent two people from creating separate documents for the same real-world job.
 
 ## Find and link
 
@@ -73,7 +73,7 @@ Provide readable output and a JSON option for agents. Writes should have a previ
 ## Checks that prove the foundation
 
 1. Create documents on two offline devices, then combine the files and validate IDs.
-2. Create several documents in the same millisecond and verify distinct generated IDs.
+2. Create several documents in the same second; verify local collision retry with a deliberately repeated candidate and duplicate detection after independently generated files are combined.
 3. Find a document after a manual rename or move.
 4. Move a linked document through the CLI and verify the generated links still work.
 5. Detect a copied/conflicted duplicate ID without changing either file.
@@ -87,4 +87,4 @@ Add custom type creation and typed metadata updates next; define the job master 
 
 A job master holds general job information and links to separate budgets and other documents. It does not become the budget itself.
 
-Next decision: accept or adjust the ID and minimal linking proposals. Then settle implementation language and explicitly start the first build. This document does not authorize production migration.
+Next: settle the minimal linking behavior and implementation language, then explicitly start the first build. This document does not authorize production migration.

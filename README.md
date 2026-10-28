@@ -6,7 +6,7 @@ Conformer is a planned local CLI for giving documents permanent IDs, finding the
 
 **Status: planning only. No CLI has been built.**
 
-Start with the [small first-version specification](docs/SPECIFICATION.md) and [ID proposal](docs/IDENTITY.md). The proposed ID format is UUIDv7: time-based, independently generated, and suitable for offline use.
+Start with the [small first-version specification](docs/SPECIFICATION.md) and [ID proposal](docs/IDENTITY.md). The proposed ID format is a compact Base36 timestamp plus four random characters: 10 characters at present, generated locally and usable offline.
 
 The only built-in type is `document`. Custom business types come later through workspace definitions. Markdown is the first managed format; spreadsheets, PDFs, CSV, HTML, and other files remain ordinary documents alongside it.
 
