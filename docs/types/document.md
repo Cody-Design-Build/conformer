@@ -34,4 +34,4 @@ The Markdown example demonstrates the simplest metadata carrier. Using the gener
 
 ## Decisions still needed
 
-ID alphabet/length/generation; exact key spelling; schema-version resolution; extension-field policy; deletion/restore identity reservation; optional display-label convention. No business statuses or folder rules are needed to settle this type.
+UUIDv7 is now the proposed ID format; see the current identity proposal. Remaining decisions include exact key spelling; schema-version resolution; extension-field policy; deletion/restore identity reservation; optional display-label convention. No business statuses or folder rules are needed to settle this type.

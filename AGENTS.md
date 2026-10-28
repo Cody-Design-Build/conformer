@@ -1,6 +1,6 @@
 # Conformer planning instructions
 
-This repository is currently for specification work. Read `docs/SPECIFICATION.md` before changes.
+This repository is currently for specification work. Read `docs/SPECIFICATION.md` before changes. The small first-version plan supersedes the earlier broad specification; do not restore deferred features as prerequisites. Reviewing the old CLI is optional and no longer blocks progress.
 
 - Do not implement the CLI, install dependencies, or migrate business documents until David explicitly starts the build.
 - Keep confirmed requirements, proposed designs, and open decisions distinguishable.
