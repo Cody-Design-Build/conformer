@@ -17,6 +17,8 @@ Older helpers are available under `CDB Team/Archive/Legacy CDB Operations/`:
 
 These historical files are the basis for the observations below. They are not claimed to be the current CDB-OS implementation. Paths are relative to the shared team folder; no business records or personal details are reproduced here.
 
+A subsequent broader local search and GitHub retry did not locate the intended six-character ID generator. The document copy uses a different ID convention from the archived sequential-contact helper. See [document identity design](IDENTITY.md) for the observed shapes and the distinction between source evidence and unverified generation behavior.
+
 ## Useful patterns and changes to make
 
 | Observed behavior | Conformer design implication |

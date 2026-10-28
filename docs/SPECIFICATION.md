@@ -1,6 +1,6 @@
 # Conformer system and CLI specification
 
-Draft 0.2 · October 28, 2026 · Owner: David Cody
+Draft 0.3 · October 28, 2026 · Owner: David Cody
 
 **Status: planning, not approved for implementation.** Confirmed requirements below come from David's direction. The remaining design is a proposal to review. Example commands, keys, and layouts are illustrative; they do not describe existing software.
 
@@ -29,6 +29,8 @@ The first customer is Cody Design Build. The engine is generic; the first worksp
 | R11 | The system remains useful offline; synchronization can occur later. |
 | R12 | Review CDB-OS as a reference without automatically adopting its schema, folders, conventions, or implementation. |
 | R13 | Complete and agree on the specification before starting the build. |
+| R14 | Ship one minimal built-in type, `document`, requiring a document type and stable ID. Define business types through the CLI rather than bundling a business schema library. |
+| R15 | Define `job` as the first custom workspace type: the job master document, with general information and links to separate budgets and other documents. |
 
 ## 3. System boundary
 
@@ -103,6 +105,10 @@ If sidecars are selected, define naming, payload association, orphan detection, 
 
 ## 6. Type definitions and schema evolution
 
+Conformer ships one built-in [document type](types/document.md). Its only required metadata is a type and ID. The proposed YAML spelling is `document_type` and `id`, matching the inspected legacy convention; exact key spelling remains subject to review. No title, date, status, job relationship, body heading, or folder is required by the generic type.
+
+Business types such as [job](types/job.md) are created as ordinary workspace definitions through the CLI. They share the identity rules but supply their own fields and workflows. This does not require a general schema-inheritance system. Installation must not preload jobs, contacts, tasks, budgets, or procurement types.
+
 Each type definition should describe:
 
 - Type key, description, version, supported formats, and metadata carrier.
@@ -113,7 +119,7 @@ Each type definition should describe:
 - Any declared body or table structure and supported deterministic edits to it.
 - Issued/immutable behavior where appropriate.
 
-Proposed common metadata is `type`, `id`, and `schema_version`. Exact names and ID format remain open; importing existing IDs must not silently regenerate them.
+The generic document requires only `document_type` and `id`. Schema versions still need an explicit resolution and migration contract, but a per-document `schema_version` is no longer proposed as a universally required third field. Whether versions are pinned in workspace configuration or carried by types/documents remains open. Importing existing IDs must not silently regenerate them.
 
 Use JSON Schema for ordinary value constraints if selected after review, with a small documented companion definition for references, templates, and filing policies. Do not invent a general programming language for rules. Workspace schemas are local, versioned data; loading them must not execute code.
 
@@ -124,6 +130,8 @@ Normalization handles syntax and approved representation changes. It must not in
 ## 7. Identity, discovery, and relationships
 
 IDs are unique within the workspace across managed types. New IDs should be safe to allocate independently on offline devices; avoid a shared next-number counter as the identity source. Human document numbers can be separate fields. Exact ID format is undecided.
+
+See [the identity design notes](IDENTITY.md) for observed legacy schemes and proposed lifecycle rules. A document becoming a job keeps its ID; its type is not encoded into its identity. Updating content also preserves identity. A revision/hash identifies a content state, not the document itself. Copying to create a distinct document allocates a new ID through an explicit operation; a replicated copy of the same document retains its ID.
 
 An index maps IDs to current paths and types. It is disposable. Duplicate IDs are a blocking ambiguity for ID-based operations; never choose the newest file or first match silently. Archived documents retain their IDs. Deletion and restoration must define whether an ID remains reserved.
 
@@ -147,6 +155,7 @@ Command names are a design sketch. All mutation commands should support a non-wr
 | `document create` | Validate inputs, allocate identity, apply declared defaults/template, and create without overwriting. |
 | `document adopt` | Enroll an existing file without guessing its business type or rewriting its content. |
 | `document update` | Apply typed field changes; distinguish setting null, removing a field, and leaving it unchanged. |
+| `document retype / copy` | Proposed explicit operations: validate a new type while keeping identity, or create a distinct copy with a fresh ID. Do not treat a type change as an unchecked field edit. |
 | `document rename / move` | Preserve identity; plan supported link and companion-file changes. |
 | `document delete / restore` | Preview references; use recoverable removal by default. Permanent purge is deferred. |
 | `links check / incoming / outgoing` | Inspect relationships and supported navigation links. |
@@ -226,9 +235,10 @@ Language, packaging, executable name availability, supported operating systems, 
 
 Use [the worksheet](DOCUMENT-TYPE-WORKSHEET.md) for each type. Decide the business unit before its fields or file format. A document can contain several identified items; a task need not be a file and a budget need not be Markdown.
 
-Proposed review sequence, subject to David's preference:
+The first two steps are selected. The remainder is a proposed review sequence, not a bundled type library:
 
-1. Job: minimal identity, context, client references, and location freedom.
+0. Built-in document: only type and ID; settle identity generation and lifecycle first.
+1. Custom job master: general job information, context, references, and location freedom. Budgets, estimates, orders, and evidence remain separate documents; no automatic folder or document packet is implied.
 2. Person and organization: separate or combined type decisions, affiliation references, sensitive-field boundaries.
 3. Task or task list: natural editing unit, ownership, dates, and cross-job discovery.
 4. Budget/estimate: workbook authority, metadata, formulas, and accepted snapshots.
@@ -243,6 +253,9 @@ No statuses, required business fields, folder hierarchy, or imported legacy sche
 | Scenario | Required outcome |
 |---|---|
 | Same command from two unrelated working directories | Explicit workspace selects the same documents and rules. |
+| Initialize an empty workspace | Only the generic document type is available; no business folders or domain types are automatically created. |
+| Create a generic document | Only type and ID are required; ordinary body content and location remain flexible. |
+| Define job through the CLI and retype a generic document | The new definition applies without engine changes; identity stays unchanged and target fields are validated. |
 | Move a job file to another allowed folder | ID and structured references remain valid; supported navigation is repaired or diagnosed. |
 | Create two documents offline on separate devices | Identity allocation does not depend on a shared counter; later collisions are still checked. |
 | Manual malformed YAML or duplicate ID | Check reports the affected file; ID-based mutation never guesses a target. |
@@ -263,7 +276,8 @@ No statuses, required business fields, folder hierarchy, or imported legacy sche
 | Local documents are authoritative; CLI is generic and workspace-scoped | Confirmed |
 | Build starts after specification is settled | Confirmed |
 | Metadata carrier for non-Markdown formats | Open by type; avoid extensive sidecars, which David identified as a clutter concern |
-| First business document type | Open; job proposed |
+| Built-in document type | Confirmed minimal type and ID; exact YAML key spelling proposed as `document_type` and `id` |
+| First business document type | Job master selected; workspace-defined through the CLI, with separate budgets and other documents |
 | Common metadata keys and ID format | Open |
 | Link syntax and Obsidian behavior | Open; test ordinary Markdown and wikilinks |
 | JSON configuration and schema version convention | Proposed |
@@ -274,6 +288,6 @@ No statuses, required business fields, folder hierarchy, or imported legacy sche
 | Issued-document protection, delete/restore receipt format | Open |
 | CDB-OS source review | Pending access to the actual CLI checkout/repository |
 
-Next: resolve metadata carriers and choose the first type; review the full CDB-OS CLI when accessible; complete that type's worksheet; settle the write/link/recovery contract with examples; agree on v1 scope and implementation language. David then explicitly starts the build.
+Next: review the intended CDB-OS ID generator when accessible; settle the generic document's identity and version-resolution contract; define the job master type through its worksheet; resolve non-Markdown metadata when a type needs it; settle the write/link/recovery contract with examples; agree on v1 scope and implementation language. David then explicitly starts the build.
 
 Production adoption is a separate later decision. Begin with synthetic fixtures, then an isolated copy with preserved IDs and before-state backups. No production refresh, reclassification, restructuring, or migration follows merely from finishing this spec.
