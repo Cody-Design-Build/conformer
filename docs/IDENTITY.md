@@ -2,6 +2,10 @@
 
 October 28, 2026 · Current design proposal, not yet implemented
 
+## Verified Surface reference
+
+The source David supplied implements the same time-plus-random pattern with different parameters: **seven lowercase Crockford Base32 characters of Unix seconds plus five random characters**, totaling **12**. See [`surface_id()`](https://github.com/Cody-Design-Build/Surface/blob/ed9c427b5a821a24c37e81857b97f8edebc12197/supabase/migrations/0001_types_engine.sql#L5-L24) and [the reuse review](CDB-REFERENCE-REVIEW.md). The code is now available as a reference; the shorter Conformer proposal below is not its exact format. Decide whether to retain Surface's format or shorten it before implementation.
+
 ## Format
 
 Use Unix time in whole seconds, encoded in uppercase Base36, followed by four independent uniformly random Base36 characters. Base36 uses `0–9` and `A–Z`. This is a small Conformer format, not a claim to implement a named universal ID standard. Base conversion is an existing primitive; for example, [JavaScript supports radix 36 directly](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toString).

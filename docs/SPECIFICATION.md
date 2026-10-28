@@ -81,10 +81,16 @@ Provide readable output and a JSON option for agents. Writes should have a previ
 7. Confirm a metadata update preserves narrative content and a stale write is rejected where detectable.
 8. Operate without internet access and open the documents without Conformer.
 
+## Reusing Surface
+
+David authorized reusing suitable code from `Cody-Design-Build/Surface`. The verified ID generator uses seven Base32 time characters plus five random characters (12 total). Confirm whether to reuse that exact format or the shorter proposal above. See [source findings and reuse candidates](CDB-REFERENCE-REVIEW.md).
+
+Prefer extracted Markdown/link helpers and adapted tests. Keep document files authoritative; do not bring in Surface's database, cloud sync, server, or checkout lifecycle. Source reuse does not start implementation automatically.
+
 ## Later increments
 
 Add custom type creation and typed metadata updates next; define the job master as the first business example. Then consider non-Markdown metadata, richer queries, folder policies, copy-as-new, and recoverable deletion. None requires a bundled business schema library.
 
 A job master holds general job information and links to separate budgets and other documents. It does not become the budget itself.
 
-Next: settle the minimal linking behavior and implementation language, then explicitly start the first build. This document does not authorize production migration.
+Next: choose the exact ID length/alphabet using the verified Surface example, settle minimal linking behavior and implementation language, then explicitly start the first build. This document does not authorize production migration.
