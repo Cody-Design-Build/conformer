@@ -1,6 +1,6 @@
 # Built-in document type
 
-October 28, 2026 · Agreed minimal scope; not implemented
+October 28, 2026 · Implemented first-version contract
 
 Conformer ships one generic type that supplies identity without imposing a business model:
 

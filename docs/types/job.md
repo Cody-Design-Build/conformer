@@ -11,7 +11,7 @@ A job master document identifies a job and holds general context about it. It is
 - Budgets and other independently useful documents remain separate and refer to the job's ID where a structured relationship is needed.
 - Job identity does not depend on its filename or folder.
 - Creating a job does not inherently create a folder hierarchy, budget, task list, or payment register.
-- The type is defined through the same CLI mechanism available for any other custom type.
+- The type is defined through the same workspace configuration mechanism available for any other custom type.
 
 ## Fields to decide together
 

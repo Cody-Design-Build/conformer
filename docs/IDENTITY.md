@@ -1,6 +1,6 @@
 # Compact document IDs
 
-October 28, 2026 · ID format selected by David, not yet implemented
+October 28, 2026 · Implemented first-version ID format
 
 ## Verified Surface reference
 
@@ -25,6 +25,12 @@ TNLC00K7Q2
 - No network, shared sequence, username, or registered machine identifier.
 - Clock changes may repeat a timestamp; fresh randomness still applies. The timestamp is not proof of a business date or reliable ordering between devices.
 
+## Validation
+
+A valid stored ID contains only uppercase `0–9` and `A–Z`. The last four characters are the suffix; the preceding timestamp has at least six characters. A six-character timestamp may contain leading zeroes. A longer timestamp must not begin with zero, because generation uses the shortest Base36 representation once six characters are insufficient.
+
+Decode the timestamp as an unsigned integer without truncation. Timestamp zero and future timestamps are valid; the timestamp is allocation context, not an asserted document date. Lowercase input, separators, non-ASCII lookalikes, short timestamps, and noncanonical extra leading zeroes are invalid and are never normalized by read-only commands.
+
 ## Collision behavior
 
 Different encoded timestamp values cannot produce identical full IDs. Within the same timestamp value, four Base36 characters provide 36^4 = 1,679,616 suffixes. For two independently and uniformly generated suffixes in that second, the collision probability is 1 in 1,679,616. More creations within a second increase the risk; this is a deliberate fit for the low document creation rate David described, not a high-throughput distributed allocation guarantee.
@@ -44,6 +50,6 @@ Offline devices cannot check one another's pending work. After sync, `check` rep
 
 An ID does not prevent two people creating different documents about the same job, or resolve simultaneous edits. No production IDs are rewritten by this planning decision. Legacy adoption can be designed later, and the old CLI is no longer a prerequisite.
 
-## Later implementation checks
+## Implementation checks
 
 Verify encoding/decoding and leading zeros, timestamp growth without truncation, same-second creation, injected local collisions, independent-process creation, clock rollback, secure-random failure, and duplicate detection after combining offline copies. Keep these tests focused on the ID and write contracts; do not build a separate ID service.
